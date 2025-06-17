@@ -1,0 +1,6 @@
+lancedb==0.22.0
+pylance==0.26.1
+duckdb==1.2.2
+pandas==2.2.3
+pyarrow==20.0.0
+streamlit

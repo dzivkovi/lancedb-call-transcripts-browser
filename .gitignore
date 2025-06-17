@@ -1,0 +1,26 @@
+whiskey_jack.lance
+
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.db
+*.sqlite3
+*.log
+*.egg-info
+*.egg
+*.dist-info
+*.coverage
+*.DS_Store
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+# Ignore Python bytecode files
+.venv
+venv
+.winenv
+
+# Ignore virtual environment directories
+# Ignore IDE/editor specific files
+.vscode/
+.idea/

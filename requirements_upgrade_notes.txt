@@ -1,0 +1,22 @@
+# Package Upgrade Notes (June 2025)
+# Research results from version compatibility testing
+# WARNING: Use requirements.txt for guaranteed compatibility
+# This file documents upgrade paths and version flexibility for future maintenance
+
+# Core LanceDB ecosystem - keep together for compatibility
+lancedb>=0.22.0,<0.25.0
+pylance>=0.26.1,<0.28.0  # CRITICAL: Required for .to_lance() method
+pyarrow>=20.0.0
+
+# DuckDB - can upgrade (stable API)
+duckdb>=1.2.2
+
+# Data processing - safe to upgrade
+pandas>=2.2.3
+
+# UI framework - safe to upgrade  
+streamlit>=1.28.0
+
+# Optional: For development/analysis
+jupyter>=1.0.0
+ipykernel>=6.0.0
