@@ -70,7 +70,19 @@ python lancedb_data_dump.py
 streamlit run lancedb_data_browser.py
 ```
 
-#### 3. Correlation Analysis (Key Discovery Scripts)
+#### 3. Export Transcripts for Neo4j
+```bash
+# Export to stdout (default)
+python export_for_neo4j.py
+
+# Save to file
+python export_for_neo4j.py -o transcripts.json
+
+# Compact JSON, silent mode
+python export_for_neo4j.py --indent 0 --quiet > data.json
+```
+
+#### 4. Correlation Analysis (Key Discovery Scripts)
 ```bash
 # Check session ID correlation - THE KEY DISCOVERY
 python check_session_ids.py
@@ -82,7 +94,7 @@ python test_connor_lookup.py
 python check_all_communications.py
 ```
 
-#### 4. Comprehensive Statistical Analysis
+#### 5. Comprehensive Statistical Analysis
 ```bash
 # Full exploratory data analysis
 python whiskey_jack_eda.py

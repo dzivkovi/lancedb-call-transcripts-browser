@@ -139,7 +139,7 @@ if __name__ == "__main__":
     if success:
         print("\n✅ Successfully explored the whiskey_jack table!")
         print("💡 You can now use:")
-        print("   streamlit run final_working_browser.py")
+        print("   streamlit run lancedb_data_browser.py")
     else:
         print("\n❌ Exploration failed")
         print("But we know the table exists - check error messages above")

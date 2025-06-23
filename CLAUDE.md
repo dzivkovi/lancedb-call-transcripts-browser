@@ -123,7 +123,7 @@ schema = table.schema
 
 ### Working Scripts (Verified)
 - **`lancedb_data_dump.py`** - Successfully connects and explores data ✅
-- **`final_working_browser.py`** - Full Streamlit interface ✅
+- **`lancedb_data_browser.py`** - Full Streamlit interface ✅
 - **`test_all_methods.py`** - Tests different connection methods
 
 ### Legacy/Learning Scripts
