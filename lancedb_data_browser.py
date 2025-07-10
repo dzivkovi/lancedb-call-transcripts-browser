@@ -8,6 +8,8 @@ import streamlit as st
 import lancedb
 import duckdb
 import pandas as pd
+import argparse
+import sys
 from datetime import datetime
 
 st.set_page_config(
@@ -60,7 +62,7 @@ def connect_db():
 def load_table_metadata():
     """Load table metadata for caching"""
     db = connect_db()
-    table = db.open_table("whiskey_jack")
+    table = db.open_table(st.session_state.table_name)
 
     try:
         total_rows = table.count_rows()
@@ -95,7 +97,7 @@ def load_table_metadata():
 def get_table():
     """Get table object (not cached)"""
     db = connect_db()
-    return db.open_table("whiskey_jack")
+    return db.open_table(st.session_state.table_name)
 
 
 def convert_timestamp(timestamp):
@@ -483,5 +485,32 @@ with st.sidebar:
                 else:
                     st.warning("No matches found")
 
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Professional LanceDB Browser - Clean, Excel-style interface for data exploration",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  streamlit run %(prog)s                           # Browse whiskey_jack table
+  streamlit run %(prog)s -- --table evidence_calls # Browse custom table
+  streamlit run %(prog)s -- --table phone_records  # Browse phone records table
+        """,
+    )
+    
+    parser.add_argument(
+        "--table",
+        default="whiskey_jack",
+        help="LanceDB table name (default: whiskey_jack)",
+    )
+    
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    # Initialize session state with table name
+    if "table_name" not in st.session_state:
+        args = parse_args()
+        st.session_state.table_name = args.table
+    
     main()

@@ -81,3 +81,36 @@ def test_export_generates_same_format():
             required_fields = ["text", "chunk_count", "char_count", "session_type"]
             for field in required_fields:
                 assert field in first_value, f"Missing required field: {field}"
+
+
+def test_streamlit_browser_table_support():
+    """Test that Streamlit browser help shows --table argument"""
+    result = subprocess.run(
+        ["python", "lancedb_data_browser.py", "--help"],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    
+    assert result.returncode == 0, "Streamlit browser help failed"
+    assert "--table" in result.stdout, "Streamlit browser missing --table argument"
+
+
+def test_table_switching_integration():
+    """Integration test: Scripts work with custom table argument"""
+    scripts_to_test = [
+        "export_for_neo4j.py",
+        "test_connor_lookup.py",
+    ]
+    
+    for script in scripts_to_test:
+        result = subprocess.run(
+            ["python", script, "--table", "whiskey_jack", "--help"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        
+        # Help should work with --table argument
+        assert result.returncode == 0, f"{script}: --table breaks help command"
+        assert "table" in result.stdout.lower(), f"{script}: Help doesn't mention table"
