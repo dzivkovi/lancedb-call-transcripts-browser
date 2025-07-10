@@ -6,6 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This workspace contains LanceDB browser utilities for exploring the `whiskey_jack` database containing text chunks with vector embeddings. The database stores conversational transcripts that have been chunked and embedded for RAG (Retrieval Augmented Generation) applications.
 
+## Design Principles
+
+- Follow **Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away** advice by Antoine de Saint-Exupéry.
+- **Optimize for User Interaction Pattern**: Before structuring anything, ask "How will users interact with this?" Browsing/scanning tasks favor flat layouts that minimize cognitive load; direct navigation tasks can use logical hierarchy.
+- **Defensive Programming**: Test everything, validate all assumptions, never rush implementation. Every query must be tested with MCP server before documentation. Expect failures and plan for them.
+- **Documentation-First**: Always check latest official docs before implementing. Technology changes faster than training data or existing code.
+- **Evals are tests for prompts**: Just as tests verify code, evals verify AI behavior. Write tests first, let them fail, then implement until they pass consistently (5+ runs for nondeterministic systems).
+- **Tests are immutable**: Once written, tests define success. Implementation serves tests, not vice versa.
+- **Use `rg` first**: ALWAYS use `rg` (ripgrep) for searching before trying `grep` or `find` combinations. It's faster and better.
+
 ## Database Structure
 
 ### LanceDB Setup
