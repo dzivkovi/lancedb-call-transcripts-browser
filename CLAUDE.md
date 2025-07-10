@@ -222,3 +222,54 @@ export LOG_LEVEL="INFO"
 - Cache database connections in Streamlit
 - DuckDB SQL queries are efficient for aggregations
 - Vector columns are `fixed_size_list<item: float>[1024]`
+
+---
+
+## Contributing Guidelines
+
+### ⚠️ **CRITICAL: GitHub Workflow Rules**
+
+#### Branch Naming Convention (ENFORCED BY GITGUARD)
+
+- **Pattern**: `^(feat|fix|docs|chore)/[0-9]+-[description]`
+- **Rule**: Branch number MUST reference an existing GitHub issue
+- **Examples**: 
+  - ✅ `fix/27-post-merge-cleanup` (Issue #27 exists)
+  - ❌ `fix/28-new-feature` (if Issue #28 doesn't exist)
+
+#### Issue-Branch-PR Workflow
+
+1. **MUST verify**: Does the issue exist before creating branch?
+2. **Continuation work**: Use original issue number (e.g., `fix/27-cleanup` for Issue #27 follow-up)
+3. **New features**: Create issue first, then branch with same number
+4. **NEVER assume**: Don't use "next number" without verifying issue exists
+
+#### Before Creating Any Branch:
+
+```bash
+# Check if issue exists first
+gh issue view 28  # Verify issue exists before creating fix/28-*
+```
+
+**GitGuard Failure = Stop and Fix**: Never bypass security checks, always fix the root cause.
+
+### Important Instructions
+
+- **NEVER sign commits or changes as Claude/AI** - use standard git authorship only
+- NEVER use emojis in any files or documentation unless explicitly requested by the User
+- Only create documentation files when explicitly requested
+- Always prefer editing existing files to creating new ones
+- NEVER write Cypher queries into files without first validating them using the MCP Neo4j server
+- ALWAYS test Cypher queries with MCP Neo4j server before documenting them
+
+### Defensive Programming Requirements
+
+**MANDATORY validation for EVERY code change**:
+
+1. **Before editing**: Search for ALL occurrences (use `rg`, not grep/find)
+2. **After editing**: Test what you modified (run scripts, execute queries, etc.)
+3. **Before committing**: Verify all changes work and nothing broke
+4. **Always report**: Tell user exactly what you validated
+
+**NEVER claim success without proving it**
+
