@@ -14,6 +14,11 @@ work/
 data/
 whiskey_jack.lance
 
+# Security: prevent accidental commit of case data in root
+/transcripts.json
+/sessions.ndjson
+/sessions_fixed.ndjson
+
 # temporary conversation files
 analysis/*/conversations/
 analysis/**/2025-*/

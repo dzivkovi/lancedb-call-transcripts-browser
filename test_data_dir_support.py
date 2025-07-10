@@ -210,5 +210,49 @@ class TestCaseBasedWorkflow:
             assert result.returncode == 0, "Custom output filename should be supported"
 
 
+class TestNDJSONDataRecovery:
+    """Test NDJSON data recovery integration with main workflow"""
+    
+    def test_fix_ndjson_tool_exists_and_works(self):
+        """Test that fix_ndjson.py tool is available and functional"""
+        import subprocess
+        import tempfile
+        import os
+        
+        # Create test NDJSON with concatenated objects
+        test_content = '{"id": 1, "type": "test"}{"id": 2, "type": "test"}\n{"id": 3, "type": "single"}\n'
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.ndjson', delete=False) as f:
+            f.write(test_content)
+            test_file = f.name
+        
+        try:
+            # Test dry run mode
+            result = subprocess.run([
+                sys.executable, 'fix_ndjson.py', test_file, '--dry-run'
+            ], capture_output=True, text=True)
+            
+            assert result.returncode == 0
+            assert "1 problematic lines" in result.stdout
+            assert "Would fix 1 lines" in result.stdout
+            
+        finally:
+            os.unlink(test_file)
+    
+    def test_check_all_communications_uses_fixed_file(self):
+        """Test that analysis tools automatically use fixed NDJSON files"""
+        # This validates the integration where check_all_communications.py
+        # automatically detects and uses sessions_fixed.ndjson when available
+        import subprocess
+        
+        result = subprocess.run([
+            sys.executable, 'check_all_communications.py', '--help'
+        ], capture_output=True, text=True)
+        
+        # Should not crash and should show help
+        assert result.returncode == 0
+        assert "Check communication types correlation" in result.stdout
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

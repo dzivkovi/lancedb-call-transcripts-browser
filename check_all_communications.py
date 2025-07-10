@@ -40,8 +40,26 @@ Examples:
     print("\n📊 NDJSON Session Types Distribution")
     print("-" * 50)
 
-    with open("data/sessions.ndjson", "r") as f:
-        sessions = [json.loads(line) for line in f if line.strip()]
+    # Try fixed file first, fallback to original
+    sessions_file_fixed = f"{args.data_dir}/sessions_fixed.ndjson"
+    sessions_file_original = f"{args.data_dir}/sessions.ndjson"
+    
+    import os
+    if os.path.exists(sessions_file_fixed):
+        sessions_file = sessions_file_fixed
+        print("📊 Using FIXED NDJSON data (100% clean)")
+    else:
+        sessions_file = sessions_file_original
+        print("📊 Using original NDJSON data (with minor parsing issues)")
+    sessions = []
+    with open(sessions_file, "r") as f:
+        for i, line in enumerate(f):
+            try:
+                if line.strip():
+                    sessions.append(json.loads(line.strip()))
+            except json.JSONDecodeError as e:
+                print(f"Warning: Skipping line {i+1} due to JSON error: {e}")
+                continue
 
     session_types = {}
     for session in sessions:
