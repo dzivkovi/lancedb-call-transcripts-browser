@@ -1,4 +1,27 @@
+# python
+.venv/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Test results
+*.coverage
+.benchmarks/
+
+# work folders
+work/
+data/
 whiskey_jack.lance
+
+# temporary conversation files
+analysis/*/conversations/
+analysis/**/2025-*/
+# archived documents
+analysis/**/archive/
+
+# starter design docs (later moved to analysis/<issue#>/DESIGN.md)
+analysis/0000/DESIGN*.md
 
 __pycache__
 *.pyc

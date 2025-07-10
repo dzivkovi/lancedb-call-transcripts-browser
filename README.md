@@ -1,5 +1,15 @@
 # LanceDB Transcript Analysis & Neo4j Integration Research
 
+## 🎯 Quick Export Command
+
+**To regenerate transcripts for Neo4j/other projects:**
+```bash
+python export_for_neo4j.py -o data/whiskey-jack/transcripts.json
+```
+This creates a JSON file with aggregated session transcripts ready for import.
+
+---
+
 ## Executive Summary
 
 This repository documents a comprehensive investigation into connecting LanceDB call transcripts with the Neo4j POLE surveillance data model. Through systematic exploration and analysis, we've successfully established how to correlate transcripts with surveillance metadata and discovered key insights that will inform the next phase of graph database development.
@@ -37,11 +47,41 @@ Understanding the nature and distribution of surveillance communications
 
 | Script | Purpose | Key Finding |
 |--------|---------|-------------|
-| `whiskey_jack_eda.py` | Exploratory Data Analysis | 50% are text messages (<20 words), 96% fit in single chunk |
+| `whiskey-jack_eda.py` | Exploratory Data Analysis | 50% are text messages (<20 words), 96% fit in single chunk |
 
 ---
 
 ## Quick Start Guide
+
+### 🚀 GENERATE TRANSCRIPTS (Most Common Task)
+
+To export aggregated transcripts from LanceDB for use in other projects:
+
+```bash
+# Standard export to data/<CASE>/transcripts.json
+# Replace <CASE> with your investigation name (e.g., whiskey-jack)
+python export_for_neo4j.py -o data/whiskey-jack/transcripts.json
+
+# Other options:
+python export_for_neo4j.py                    # Output to stdout
+python export_for_neo4j.py --quiet -o file.json  # No progress messages
+python export_for_neo4j.py --indent 0 -o file.json  # Compact JSON
+```
+
+**Output Format**: JSON with session_id as key, containing aggregated text and metadata:
+```json
+{
+  "session-id-here": {
+    "text": "Full aggregated transcript text",
+    "chunk_count": 2,
+    "char_count": 185,
+    "session_type": "Telephony",
+    "content_type": "audio/x-wav",
+    "target": "@Person Name",
+    "timestamp": 1581376213
+  }
+}
+```
 
 ### Installation
 ```bash
@@ -70,18 +110,6 @@ python lancedb_data_dump.py
 streamlit run lancedb_data_browser.py
 ```
 
-#### 3. Export Transcripts for Neo4j
-```bash
-# Export to stdout (default)
-python export_for_neo4j.py
-
-# Save to file
-python export_for_neo4j.py -o transcripts.json
-
-# Compact JSON, silent mode
-python export_for_neo4j.py --indent 0 --quiet > data.json
-```
-
 #### 4. Correlation Analysis (Key Discovery Scripts)
 ```bash
 # Check session ID correlation - THE KEY DISCOVERY
@@ -97,7 +125,7 @@ python check_all_communications.py
 #### 5. Comprehensive Statistical Analysis
 ```bash
 # Full exploratory data analysis
-python whiskey_jack_eda.py
+python whiskey-jack_eda.py
 ```
 
 ---
@@ -165,7 +193,7 @@ Next Phase:
 
 ### LanceDB Structure
 - **Database**: Current directory (`.`)
-- **Table**: `whiskey_jack` (in `./whiskey_jack.lance/`)
+- **Table**: `whiskey-jack` (in `./whiskey-jack.lance/`)
 - **Records**: 325 chunks from 251 unique sessions
 - **Embeddings**: 1024-dimensional vectors (multilingual-e5-large-instruct)
 
@@ -176,7 +204,7 @@ import duckdb
 
 # Connect to LanceDB
 db = lancedb.connect(".")
-table = db.open_table("whiskey_jack")
+table = db.open_table("whiskey-jack")
 
 # Aggregate sessions using DuckDB SQL
 whiskey_table = table.to_lance()

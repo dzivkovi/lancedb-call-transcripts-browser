@@ -1,0 +1,68 @@
+{
+  "permissions": {
+    "webFetch": {
+      "allow": [
+        "lancedb.io/*",
+        "blog.lancedb.com/*",
+        "lancedb.github.io/*",
+        "neo4j.com/*",
+        "github.com/*",
+        "stackoverflow.com/*",
+        "pypi.org/*",
+        "python.org/*",
+        "pandas.pydata.org/*",
+        "docs.streamlit.io/*"
+      ]
+    },
+    "bash": {
+      "allow": [
+        "source .*/bin/activate",
+        "pip install.*",
+        "pip list.*",
+        "python .*\\.py",
+        "streamlit run .*\\.py",
+        "pytest .*",
+        "rg .*",
+        "grep -r .*",
+        "jq .*",
+        "mkdir -p .*",
+        "cp .*",
+        "ls .*",
+        "cat .*",
+        "echo .*",
+        "pwd",
+        "which .*",
+        "env | grep .*",
+        "python -m .*",
+        "black .*",
+        "flake8 .*"
+      ],
+      "deny": [
+        "rm -rf /",
+        "sudo .*",
+        "chmod 777 .*",
+        "> /dev/.*"
+      ]
+    },
+    "fileOperations": {
+      "allowedPaths": [
+        "./",
+        "/tmp/lancedb_*"
+      ],
+      "deniedPaths": [
+        "/etc/*",
+        "/usr/*",
+        "/bin/*",
+        "~/.ssh/*"
+      ]
+    },
+    "mcp": {
+      "neo4j": {
+        "allow": [
+          "mcp__neo4j__get_neo4j_schema",
+          "mcp__neo4j__read_neo4j_cypher"
+        ]
+      }
+    }
+  }
+}
