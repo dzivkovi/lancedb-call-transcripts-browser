@@ -40,22 +40,21 @@ Key columns in the whiskey_jack table:
 
 ## Common Commands
 
-### Setup
+**For user-facing documentation and examples, see README.md**
+
+### Key Development Commands
 ```bash
 # Install dependencies
 pip install -r requirements.txt
-```
 
-### Running Applications
-```bash
-# Quick schema/data exploration
-python simple_explorer.py
+# Run tests
+python -m pytest test_table_config_pytest.py -v
 
-# Launch Streamlit browser
-streamlit run lancedb_browser.py
+# Format code
+ruff format .
 
-# Extract session texts (client's approach)
-python client_example.py
+# Check code style
+ruff check .
 ```
 
 ## Key Scripts

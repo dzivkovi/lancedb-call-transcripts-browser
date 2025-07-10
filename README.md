@@ -1,12 +1,38 @@
 # LanceDB Transcript Analysis & Neo4j Integration Research
 
-## 🎯 Quick Export Command
+## 🎯 Quick Start: Working with Investigation Cases
 
-**To regenerate transcripts for Neo4j/other projects:**
+### Setting up a new investigation (3 simple steps)
+
+**Example case names** (inspired by famous surveillance investigations):
+- `btk` - Digital forensics case
+- `golden-state` - Phone records analysis  
+- `boston-marathon` - Communications intercepts
+- `silk-road` - Network surveillance
+
+**Example: Processing case data**
 ```bash
-python export_for_neo4j.py -o data/whiskey-jack/transcripts.json
+# 1. Create case folder
+mkdir -p data/btk
+
+# 2. Copy your LanceDB table (whatever.lance folder)
+cp -r /path/to/your_case_data.lance data/btk/
+
+# 3. Generate transcripts (table name = folder without .lance)
+python export_for_neo4j.py --table your_case_data -o data/btk/transcripts.json
 ```
-This creates a JSON file with aggregated session transcripts ready for import.
+
+**That's it!** Your transcripts.json is ready for Neo4j import.
+
+### More Examples
+```bash
+# Different case structures
+python export_for_neo4j.py --table phone_records -o data/golden-state/transcripts.json
+python export_for_neo4j.py --table communications -o data/boston-marathon/transcripts.json
+
+# Browse any case data visually  
+streamlit run lancedb_data_browser.py -- --table your_table_name
+```
 
 ---
 
