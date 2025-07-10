@@ -8,14 +8,28 @@ import json
 import lancedb
 import duckdb
 
+
 def main():
     parser = argparse.ArgumentParser(
-        description="Check communication types correlation between NDJSON, Neo4j, and LanceDB"
+        description="Check communication types correlation between NDJSON, Neo4j, and LanceDB",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s                                    # Check whiskey_jack table in current directory
+  %(prog)s --table evidence_calls             # Check custom table in current directory
+  %(prog)s --data-dir /path/to/data           # Check whiskey_jack table in specific directory
+  %(prog)s --data-dir ./case_data --table phone_records  # Check custom table in specific directory
+        """,
     )
     parser.add_argument(
-        '--table',
-        default='whiskey_jack',
-        help='LanceDB table name (default: whiskey_jack)'
+        "--table",
+        default="whiskey_jack",
+        help="LanceDB table name (default: whiskey_jack)",
+    )
+    parser.add_argument(
+        "--data-dir",
+        default=".",
+        help="Directory containing LanceDB data (default: current directory)",
     )
     args = parser.parse_args()
 
@@ -26,16 +40,18 @@ def main():
     print("\n📊 NDJSON Session Types Distribution")
     print("-" * 50)
 
-    with open('data/sessions.ndjson', 'r') as f:
+    with open("data/sessions.ndjson", "r") as f:
         sessions = [json.loads(line) for line in f if line.strip()]
 
     session_types = {}
     for session in sessions:
-        session_type = session.get('sessiontype', 'Unknown')
+        session_type = session.get("sessiontype", "Unknown")
         session_types[session_type] = session_types.get(session_type, 0) + 1
 
     print("Session types from NDJSON:")
-    for session_type, count in sorted(session_types.items(), key=lambda x: x[1], reverse=True):
+    for session_type, count in sorted(
+        session_types.items(), key=lambda x: x[1], reverse=True
+    ):
         print(f"  {session_type}: {count}")
 
     # Neo4j confirmed counts
@@ -43,11 +59,11 @@ def main():
     print("-" * 50)
     neo4j_counts = {
         "Messaging": 159,
-        "Email": 50, 
+        "Email": 50,
         "Telephony": 42,
         "Entity Report": 10,
         "Calendar Event": 2,
-        "Collection Report": 2
+        "Collection Report": 2,
     }
 
     for session_type, count in neo4j_counts.items():
@@ -59,11 +75,11 @@ def main():
 
     examples_by_type = {}
     for session in sessions:
-        session_type = session.get('sessiontype', 'Unknown')
+        session_type = session.get("sessiontype", "Unknown")
         if session_type not in examples_by_type:
             examples_by_type[session_type] = []
         if len(examples_by_type[session_type]) < 3:
-            examples_by_type[session_type].append(session.get('sessionguid'))
+            examples_by_type[session_type].append(session.get("sessionguid"))
 
     for session_type, guids in examples_by_type.items():
         print(f"\n{session_type} examples:")
@@ -74,7 +90,7 @@ def main():
     print("\n📈 LanceDB Content Analysis")
     print("-" * 50)
 
-    db = lancedb.connect(".")
+    db = lancedb.connect(args.data_dir)
     table = db.open_table(args.table)
     whiskey_table = table.to_lance()
 
@@ -83,7 +99,9 @@ def main():
     SELECT DISTINCT session_id
     FROM whiskey_table
     """
-    lancedb_session_ids = set(row[0] for row in duckdb.query(lancedb_sessions_sql).fetchall())
+    lancedb_session_ids = set(
+        row[0] for row in duckdb.query(lancedb_sessions_sql).fetchall()
+    )
     print(f"Total sessions in LanceDB: {len(lancedb_session_ids)}")
 
     # Test each session type for LanceDB matches
@@ -96,25 +114,33 @@ def main():
         for guid in guids:
             if guid in lancedb_session_ids:
                 matches += 1
-        
+
         correlation_results[session_type] = {
-            'tested': len(guids),
-            'matched': matches,
-            'percentage': (matches / len(guids)) * 100 if len(guids) > 0 else 0
+            "tested": len(guids),
+            "matched": matches,
+            "percentage": (matches / len(guids)) * 100 if len(guids) > 0 else 0,
         }
-        
+
         print(f"{session_type}:")
         print(f"  Tested: {len(guids)} samples")
         print(f"  Matched: {matches} in LanceDB")
-        print(f"  Success rate: {matches/len(guids)*100:.1f}%")
+        print(f"  Success rate: {matches / len(guids) * 100:.1f}%")
 
     # Get sample content for matched non-telephony sessions
     print("\n💬 Sample Content from Non-Telephony Sessions")
     print("-" * 50)
 
     # Find messaging sessions in LanceDB
-    messaging_guids = [guid for guid in examples_by_type.get('Messaging', []) if guid in lancedb_session_ids]
-    email_guids = [guid for guid in examples_by_type.get('Email', []) if guid in lancedb_session_ids]
+    messaging_guids = [
+        guid
+        for guid in examples_by_type.get("Messaging", [])
+        if guid in lancedb_session_ids
+    ]
+    email_guids = [
+        guid
+        for guid in examples_by_type.get("Email", [])
+        if guid in lancedb_session_ids
+    ]
 
     if messaging_guids:
         print("📱 Messaging content samples:")
@@ -167,15 +193,15 @@ def main():
 
     # Categorize by length across all communication types
     very_short = 0  # <20 words - likely text messages
-    short = 0       # 20-50 words
-    medium = 0      # 50-200 words
-    long = 0        # >200 words
+    short = 0  # 20-50 words
+    medium = 0  # 50-200 words
+    long = 0  # >200 words
 
     word_counts = []
     for session_id, full_text, chunk_count in all_sessions:
         word_count = len(full_text.split())
         word_counts.append(word_count)
-        
+
         if word_count < 20:
             very_short += 1
         elif word_count < 50:
@@ -186,11 +212,19 @@ def main():
             long += 1
 
     total_sessions = len(all_sessions)
-    print(f"Content analysis across ALL communication types:")
-    print(f"  Very short (<20 words): {very_short} ({very_short/total_sessions*100:.1f}%) - Text messages")
-    print(f"  Short (20-50 words): {short} ({short/total_sessions*100:.1f}%) - Brief communications")
-    print(f"  Medium (50-200 words): {medium} ({medium/total_sessions*100:.1f}%) - Emails/short calls")
-    print(f"  Long (>200 words): {long} ({long/total_sessions*100:.1f}%) - Phone calls/long emails")
+    print("Content analysis across ALL communication types:")
+    print(
+        f"  Very short (<20 words): {very_short} ({very_short / total_sessions * 100:.1f}%) - Text messages"
+    )
+    print(
+        f"  Short (20-50 words): {short} ({short / total_sessions * 100:.1f}%) - Brief communications"
+    )
+    print(
+        f"  Medium (50-200 words): {medium} ({medium / total_sessions * 100:.1f}%) - Emails/short calls"
+    )
+    print(
+        f"  Long (>200 words): {long} ({long / total_sessions * 100:.1f}%) - Phone calls/long emails"
+    )
 
     avg_words = sum(word_counts) / len(word_counts)
     print(f"\nOverall average: {avg_words:.0f} words per communication")
@@ -200,13 +234,16 @@ def main():
     print("✅ Connor's approach works for ALL communication types!")
     print(f"✅ LanceDB contains {len(lancedb_session_ids)} sessions covering:")
     print("   - Phone calls (Telephony)")
-    print("   - Text messages (Messaging)")  
+    print("   - Text messages (Messaging)")
     print("   - Emails")
     print("   - Other communication types")
-    print(f"✅ Most communications are short: {(very_short+short)/total_sessions*100:.0f}% under 50 words")
+    print(
+        f"✅ Most communications are short: {(very_short + short) / total_sessions * 100:.0f}% under 50 words"
+    )
     print("✅ Perfect for Neo4j 5's built-in vector search!")
 
     print("\n✅ Analysis Complete!")
+
 
 if __name__ == "__main__":
     main()

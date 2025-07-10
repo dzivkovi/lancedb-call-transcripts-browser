@@ -11,7 +11,7 @@ import pandas as pd
 from datetime import datetime
 
 
-def analyze_data_model(table_name="whiskey_jack"):
+def analyze_data_model(table_name="whiskey_jack", data_dir="."):
     """Analyze the LanceDB data structure"""
 
     print("=" * 80)
@@ -19,7 +19,7 @@ def analyze_data_model(table_name="whiskey_jack"):
     print("=" * 80)
 
     # Connect
-    db = lancedb.connect(".")
+    db = lancedb.connect(data_dir)
     table = db.open_table(table_name)
 
     print("\n1. TABLE SCHEMA")
@@ -187,12 +187,27 @@ def analyze_data_model(table_name="whiskey_jack"):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Analyze LanceDB data model structure")
+    parser = argparse.ArgumentParser(
+        description="Analyze LanceDB data model structure",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s                                    # Analyze whiskey_jack table in current directory
+  %(prog)s --table evidence_calls             # Analyze custom table in current directory
+  %(prog)s --data-dir /path/to/data           # Analyze whiskey_jack table in specific directory
+  %(prog)s --data-dir ./case_data --table phone_records  # Analyze custom table in specific directory
+        """,
+    )
     parser.add_argument(
         "--table",
         default="whiskey_jack",
         help="LanceDB table name (default: whiskey_jack)",
     )
+    parser.add_argument(
+        "--data-dir",
+        default=".",
+        help="Directory containing LanceDB data (default: current directory)",
+    )
     args = parser.parse_args()
 
-    analyze_data_model(args.table)
+    analyze_data_model(args.table, args.data_dir)
