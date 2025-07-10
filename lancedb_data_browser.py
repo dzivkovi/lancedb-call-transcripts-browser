@@ -9,7 +9,6 @@ import lancedb
 import duckdb
 import pandas as pd
 import argparse
-import sys
 from datetime import datetime
 
 st.set_page_config(
@@ -53,15 +52,15 @@ st.markdown(
 
 
 @st.cache_resource
-def connect_db():
+def connect_db(data_dir="."):
     """Connect to the LanceDB database"""
-    return lancedb.connect(".")
+    return lancedb.connect(data_dir)
 
 
 @st.cache_data
 def load_table_metadata():
     """Load table metadata for caching"""
-    db = connect_db()
+    db = connect_db(st.session_state.data_dir)
     table = db.open_table(st.session_state.table_name)
 
     try:
@@ -96,7 +95,7 @@ def load_table_metadata():
 
 def get_table():
     """Get table object (not cached)"""
-    db = connect_db()
+    db = connect_db(st.session_state.data_dir)
     return db.open_table(st.session_state.table_name)
 
 
@@ -485,6 +484,7 @@ with st.sidebar:
                 else:
                     st.warning("No matches found")
 
+
 def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
@@ -492,25 +492,33 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  streamlit run %(prog)s                           # Browse whiskey_jack table
-  streamlit run %(prog)s -- --table evidence_calls # Browse custom table
-  streamlit run %(prog)s -- --table phone_records  # Browse phone records table
+  streamlit run %(prog)s                           # Browse whiskey_jack table in current directory
+  streamlit run %(prog)s -- --table evidence_calls # Browse custom table in current directory
+  streamlit run %(prog)s -- --data-dir /path/to/data # Browse whiskey_jack table in specific directory
+  streamlit run %(prog)s -- --data-dir ./case_data --table phone_records # Browse custom table in specific directory
         """,
     )
-    
+
     parser.add_argument(
         "--table",
         default="whiskey_jack",
         help="LanceDB table name (default: whiskey_jack)",
     )
-    
+
+    parser.add_argument(
+        "--data-dir",
+        default=".",
+        help="Directory containing LanceDB data (default: current directory)",
+    )
+
     return parser.parse_args()
 
 
 if __name__ == "__main__":
-    # Initialize session state with table name
+    # Initialize session state with table name and data directory
     if "table_name" not in st.session_state:
         args = parse_args()
         st.session_state.table_name = args.table
-    
+        st.session_state.data_dir = args.data_dir
+
     main()

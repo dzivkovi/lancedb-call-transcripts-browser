@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pytest version: Test configurable table names implementation  
+Pytest version: Test configurable table names implementation
 """
 
 import subprocess
@@ -9,7 +9,7 @@ import pytest
 
 SCRIPTS = [
     "export_for_neo4j.py",
-    "lancedb_data_dump.py", 
+    "lancedb_data_dump.py",
     "whiskey_jack_eda.py",
     "analyze_data_model.py",
 ]
@@ -24,7 +24,7 @@ def test_script_help(script_name):
         text=True,
         timeout=10,
     )
-    
+
     assert result.returncode == 0, f"{script_name}: Help command failed"
     assert "--table" in result.stdout, f"{script_name}: --table argument missing"
     assert "whiskey_jack" in result.stdout.lower(), f"{script_name}: No default shown"
@@ -34,16 +34,14 @@ def test_script_help(script_name):
 def test_backward_compatibility(script_name):
     """Test that script works without arguments (backward compatibility)"""
     result = subprocess.run(
-        ["python", script_name], 
-        capture_output=True, 
-        text=True, 
-        timeout=15
+        ["python", script_name], capture_output=True, text=True, timeout=15
     )
-    
+
     # Should NOT have argument parsing errors (backward compatibility)
     error_msg = result.stderr.lower()
-    assert not ("argument" in error_msg and "required" in error_msg), \
+    assert not ("argument" in error_msg and "required" in error_msg), (
         f"{script_name}: Requires arguments (breaks backward compatibility)"
+    )
 
 
 @pytest.mark.parametrize("script_name", SCRIPTS)
@@ -55,7 +53,7 @@ def test_table_argument_usage(script_name):
         text=True,
         timeout=10,
     )
-    
+
     # Help should work even with --table argument
     assert result.returncode == 0, f"{script_name}: --table argument breaks help"
 
@@ -63,18 +61,27 @@ def test_table_argument_usage(script_name):
 def test_export_generates_same_format():
     """Test that export_for_neo4j.py generates expected JSON format"""
     result = subprocess.run(
-        ["python", "export_for_neo4j.py", "--table", "whiskey_jack", "--quiet"],
+        [
+            "python",
+            "export_for_neo4j.py",
+            "--table",
+            "whiskey_jack",
+            "--quiet",
+            "-o",
+            "-",
+        ],
         capture_output=True,
         text=True,
         timeout=30,
     )
-    
+
     if result.returncode == 0:
         # Should be valid JSON with session IDs as keys
         import json
+
         data = json.loads(result.stdout)
         assert isinstance(data, dict), "Output should be a dictionary"
-        
+
         # Check structure of first entry
         if data:
             first_key, first_value = next(iter(data.items()))
@@ -91,7 +98,7 @@ def test_streamlit_browser_table_support():
         text=True,
         timeout=10,
     )
-    
+
     assert result.returncode == 0, "Streamlit browser help failed"
     assert "--table" in result.stdout, "Streamlit browser missing --table argument"
 
@@ -102,7 +109,7 @@ def test_table_switching_integration():
         "export_for_neo4j.py",
         "test_connor_lookup.py",
     ]
-    
+
     for script in scripts_to_test:
         result = subprocess.run(
             ["python", script, "--table", "whiskey_jack", "--help"],
@@ -110,7 +117,7 @@ def test_table_switching_integration():
             text=True,
             timeout=15,
         )
-        
+
         # Help should work with --table argument
         assert result.returncode == 0, f"{script}: --table breaks help command"
         assert "table" in result.stdout.lower(), f"{script}: Help doesn't mention table"

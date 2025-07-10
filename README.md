@@ -83,6 +83,8 @@ Understanding the nature and distribution of surveillance communications
 
 To export aggregated transcripts from LanceDB for use in other projects:
 
+> **💡 Data Quality Note**: If you encounter JSON parsing issues with NDJSON files, use `python fix_ndjson.py sessions.ndjson` to recover all data objects with 100% success rate.
+
 ```bash
 # Standard export to data/<CASE>/transcripts.json
 # Replace <CASE> with your investigation name (e.g., whiskey-jack)

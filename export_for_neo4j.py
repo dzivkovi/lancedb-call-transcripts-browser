@@ -17,18 +17,19 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                           # Output to stdout
-  %(prog)s -o transcripts.json       # Save to file
-  %(prog)s -o -                      # Explicit stdout
-  %(prog)s --quiet -o data.json      # Silent file output
+  %(prog)s                                    # Current dir → transcripts.json
+  %(prog)s --data-dir ./data/case-alpha       # Case data → transcripts.json
+  %(prog)s --data-dir /secure/ops/case-beta --table phone_records
+  %(prog)s -o custom-output.json              # Custom output filename
+  %(prog)s -o -                               # Explicit stdout
         """,
     )
 
     parser.add_argument(
         "-o",
         "--output",
-        default="-",
-        help='Output file (default: stdout, use "-" for explicit stdout)',
+        default="transcripts.json",
+        help='Output file (default: transcripts.json, use "-" for stdout)',
     )
 
     parser.add_argument(
@@ -51,6 +52,12 @@ Examples:
         help="LanceDB table name (default: whiskey_jack)",
     )
 
+    parser.add_argument(
+        "--data-dir",
+        default=".",
+        help="Directory containing LanceDB tables (default: current directory)",
+    )
+
     args = parser.parse_args()
 
     # Progress messages go to stderr if outputting to stdout
@@ -64,7 +71,7 @@ Examples:
     log("🔄 Exporting LanceDB transcripts for Neo4j...")
 
     # Connect using battle-tested pattern
-    db = lancedb.connect(".")
+    db = lancedb.connect(args.data_dir)
     table = db.open_table(args.table)
     whiskey_table = table.to_lance()
 
@@ -134,9 +141,14 @@ Examples:
         print(json_output)
         log(f"✅ Exported {len(transcripts)} sessions to stdout")
     else:
-        with open(args.output, "w") as f:
+        # If using default filename, put it in the data directory for proper case organization
+        output_file = args.output
+        if args.output == "transcripts.json" and args.data_dir != ".":
+            output_file = f"{args.data_dir}/transcripts.json"
+            
+        with open(output_file, "w") as f:
             f.write(json_output)
-        log(f"✅ Exported to: {args.output}")
+        log(f"✅ Exported to: {output_file}")
         log(f"📁 File size: {len(json_output) / 1024 / 1024:.1f} MB")
 
     # Show sample (only if not quiet and not stdout)

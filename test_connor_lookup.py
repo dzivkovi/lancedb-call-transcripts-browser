@@ -14,25 +14,33 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                           # Test with whiskey_jack table
-  %(prog)s --table evidence_calls    # Test with custom table
+  %(prog)s                                    # Test with whiskey_jack table in current directory
+  %(prog)s --table evidence_calls             # Test with custom table in current directory
+  %(prog)s --data-dir /path/to/data           # Test with whiskey_jack table in specific directory
+  %(prog)s --data-dir ./case_data --table phone_records  # Test with custom table in specific directory
         """,
     )
-    
+
     parser.add_argument(
         "--table",
         default="whiskey_jack",
         help="LanceDB table name (default: whiskey_jack)",
     )
-    
+
+    parser.add_argument(
+        "--data-dir",
+        default=".",
+        help="Directory containing LanceDB data (default: current directory)",
+    )
+
     args = parser.parse_args()
-    
+
     print("🧪 Testing Connor's Lookup Approach")
     print("=" * 50)
     print(f"Using table: {args.table}")
-    
+
     # Connect to LanceDB
-    db = lancedb.connect(".")
+    db = lancedb.connect(args.data_dir)
     table = db.open_table(args.table)
     whiskey_table = table.to_lance()
 

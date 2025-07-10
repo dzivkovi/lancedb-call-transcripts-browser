@@ -9,13 +9,13 @@ import lancedb
 import duckdb
 
 
-def explore_existing_table(table_name="whiskey_jack"):
+def explore_existing_table(table_name="whiskey_jack", data_dir="."):
     """Explore the existing whiskey_jack table"""
-    print("🔗 Connecting to LanceDB in current directory...")
+    print(f"🔗 Connecting to LanceDB in {data_dir}...")
 
     try:
-        # Connect to current directory
-        db = lancedb.connect(".")
+        # Connect to specified directory
+        db = lancedb.connect(data_dir)
         tables = db.table_names()
         print(f"✅ Connected! Found tables: {tables}")
 
@@ -138,19 +138,31 @@ def explore_existing_table(table_name="whiskey_jack"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Explore LanceDB table in current directory"
+        description="Explore LanceDB table in current directory",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s                                    # Current dir, whiskey_jack table
+  %(prog)s --data-dir ./data/case-alpha       # Case data directory
+  %(prog)s --data-dir /secure/ops/case-beta --table phone_records
+        """,
     )
     parser.add_argument(
         "--table",
         default="whiskey_jack",
         help="LanceDB table name (default: whiskey_jack)",
     )
+    parser.add_argument(
+        "--data-dir",
+        default=".",
+        help="Directory containing LanceDB tables (default: current directory)",
+    )
     args = parser.parse_args()
 
     print("🚀 Final Working LanceDB Explorer")
     print("=" * 50)
 
-    success = explore_existing_table(args.table)
+    success = explore_existing_table(args.table, args.data_dir)
 
     if success:
         print(f"\n✅ Successfully explored the {args.table} table!")
