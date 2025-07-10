@@ -4,3 +4,5 @@ duckdb==1.2.2
 pandas==2.2.3
 pyarrow==20.0.0
 streamlit
+pytest
+ruff

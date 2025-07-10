@@ -34,16 +34,16 @@ print(f"✅ Created lookup for {len(session_text_lookup)} sessions")
 # Test with our matched Neo4j session GUIDs
 matched_guids = [
     "07792de9-41b7-4cfe-abfb-fe6a4d9dc601",
-    "081da27f-8d7e-4ba4-861c-13d7d7233b49", 
+    "081da27f-8d7e-4ba4-861c-13d7d7233b49",
     "00fdfea0-8c72-487a-b726-513f6fafb338",
-    "0b595ec8-e76a-484a-9005-ef62f50d8e09"
+    "0b595ec8-e76a-484a-9005-ef62f50d8e09",
 ]
 
 print("\n🔗 Testing Direct Lookup")
 print("-" * 50)
 
 for guid in matched_guids:
-    transcript = session_text_lookup.get(guid, '')
+    transcript = session_text_lookup.get(guid, "")
     if transcript:
         word_count = len(transcript.split())
         char_count = len(transcript)
@@ -54,13 +54,15 @@ for guid in matched_guids:
     else:
         print(f"\n❌ Session: {guid} - No transcript found")
 
-print(f"\n🎯 SUCCESS RATE: {sum(1 for guid in matched_guids if session_text_lookup.get(guid, ''))}/{len(matched_guids)} sessions found")
+print(
+    f"\n🎯 SUCCESS RATE: {sum(1 for guid in matched_guids if session_text_lookup.get(guid, ''))}/{len(matched_guids)} sessions found"
+)
 
 # Show what this enables
 print("\n🚀 WHAT THIS ENABLES")
 print("-" * 50)
 print("✅ Direct Neo4j -> LanceDB transcript lookup")
-print("✅ Can enrich Neo4j sessions with transcript summaries") 
+print("✅ Can enrich Neo4j sessions with transcript summaries")
 print("✅ Can add AI-generated topics to graph nodes")
 print("✅ Can implement Connor's caching strategy")
 print("✅ Enables hybrid graph-vector queries")
@@ -68,7 +70,7 @@ print("✅ Enables hybrid graph-vector queries")
 print("\n📊 INTEGRATION POSSIBILITIES")
 print("-" * 50)
 print("1. Add transcript summaries to existing Session nodes")
-print("2. Create Content nodes with LanceDB references") 
+print("2. Create Content nodes with LanceDB references")
 print("3. Extract and cache topics/entities in graph")
 print("4. Enable semantic search within graph structure")
 

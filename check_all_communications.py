@@ -3,14 +3,26 @@
 Check all communication types correlation between NDJSON, Neo4j, and LanceDB
 """
 
+import argparse
 import json
 import lancedb
 import duckdb
 
-print("🔍 Complete Communication Types Analysis")
-print("=" * 70)
+def main():
+    parser = argparse.ArgumentParser(
+        description="Check communication types correlation between NDJSON, Neo4j, and LanceDB"
+    )
+    parser.add_argument(
+        '--table',
+        default='whiskey_jack',
+        help='LanceDB table name (default: whiskey_jack)'
+    )
+    args = parser.parse_args()
 
-# Read NDJSON file to get session types
+    print("🔍 Complete Communication Types Analysis")
+    print("=" * 70)
+
+    # Read NDJSON file to get session types
 print("\n📊 NDJSON Session Types Distribution")
 print("-" * 50)
 
@@ -62,8 +74,8 @@ for session_type, guids in examples_by_type.items():
 print("\n📈 LanceDB Content Analysis")
 print("-" * 50)
 
-db = lancedb.connect(".")
-table = db.open_table("whiskey_jack")
+    db = lancedb.connect(".")
+    table = db.open_table(args.table)
 whiskey_table = table.to_lance()
 
 # Check what session IDs exist in LanceDB
@@ -195,3 +207,6 @@ print(f"✅ Most communications are short: {(very_short+short)/total_sessions*10
 print("✅ Perfect for Neo4j 5's built-in vector search!")
 
 print("\n✅ Analysis Complete!")
+
+if __name__ == "__main__":
+    main()
