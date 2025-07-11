@@ -43,8 +43,9 @@ Examples:
     # Try fixed file first, fallback to original
     sessions_file_fixed = f"{args.data_dir}/sessions_fixed.ndjson"
     sessions_file_original = f"{args.data_dir}/sessions.ndjson"
-    
+
     import os
+
     if os.path.exists(sessions_file_fixed):
         sessions_file = sessions_file_fixed
         print("📊 Using FIXED NDJSON data (100% clean)")
@@ -58,7 +59,7 @@ Examples:
                 if line.strip():
                     sessions.append(json.loads(line.strip()))
             except json.JSONDecodeError as e:
-                print(f"Warning: Skipping line {i+1} due to JSON error: {e}")
+                print(f"Warning: Skipping line {i + 1} due to JSON error: {e}")
                 continue
 
     session_types = {}

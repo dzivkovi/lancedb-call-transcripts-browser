@@ -145,7 +145,7 @@ Examples:
         output_file = args.output
         if args.output == "transcripts.json" and args.data_dir != ".":
             output_file = f"{args.data_dir}/transcripts.json"
-            
+
         with open(output_file, "w") as f:
             f.write(json_output)
         log(f"✅ Exported to: {output_file}")
