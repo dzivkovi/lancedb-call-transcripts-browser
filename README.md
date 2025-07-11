@@ -20,9 +20,12 @@ cp -r /path/to/your_case_data.lance data/btk/
 
 # 3. Generate transcripts (table name = folder without .lance)
 python export_for_neo4j.py --table your_case_data -o data/btk/transcripts.json
+
+# 4. (NEW) Generate investigation dashboard - one command, complete analysis
+python investigate_case.py --case-dir data/btk
 ```
 
-**That's it!** Your transcripts.json is ready for Neo4j import.
+**That's it!** Your transcripts.json is ready for Neo4j import AND you have a full investigation dashboard.
 
 ### More Examples
 ```bash
@@ -74,6 +77,24 @@ Understanding the nature and distribution of surveillance communications
 | Script | Purpose | Key Finding |
 |--------|---------|-------------|
 | `whiskey-jack_eda.py` | Exploratory Data Analysis | 50% are text messages (<20 words), 96% fit in single chunk |
+
+### Phase 4: Investigation Dashboard Development
+Transforming raw data into actionable intelligence for investigators
+
+| Script | Purpose | Key Finding |
+|--------|---------|-------------|
+| `investigate_case.py` | Single-command investigation dashboard | <10 seconds to analyze 100K+ sessions |
+| `check_all_communications.py` | Deep dive into data quality gaps | Found 26MB of recoverable content in NDJSON |
+| `test_investigate_case.py` | Evaluation-first test suite | 17 tests covering all investigator needs |
+
+**Key Achievement**: One command generates complete HTML investigation dashboard with:
+- Data quality scoring (identifies coverage gaps)
+- Key players network analysis
+- Communication timeline visualization
+- Content intelligence with suspicious pattern detection
+- Actionable recommendations for investigators
+
+See [Issue #5](https://github.com/dzivkovi/lancedb-call-transcripts-browser/issues/5) - [Project Board](https://github.com/users/dzivkovi/projects/2)
 
 ---
 
