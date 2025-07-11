@@ -2,7 +2,7 @@
 
 ## 🎯 Quick Start: Working with Investigation Cases
 
-### Setting up a new investigation (3 simple steps)
+### Setting up a new investigation (4 simple steps)
 
 **Example case names** (inspired by famous surveillance investigations):
 - `btk` - Digital forensics case
